@@ -2,23 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Viewport updated for perfect mobile fit and notch support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Shree Win Panel - Floating UI</title>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Orbitron:wght@700;900&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         * { user-select: none; -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
         
+        /* Fixed body size to prevent cutoff */
         body, html { 
             width: 100%; 
             height: 100%; 
-            overflow: hidden; /* Prevents body scroll */
+            overflow: hidden; /* Prevents parent body scroll */
             font-family: 'Roboto Condensed', sans-serif; 
             background: #000;
+            position: fixed; /* Ensures no unwanted scrolling on mobile */
+            top: 0; left: 0;
         }
 
         /* ---------------------------------
-           LOGIN OVERLAY (NEW)
+           LOGIN OVERLAY
         --------------------------------- */
         #login-screen {
             position: fixed; inset: 0; z-index: 999999;
@@ -46,15 +50,17 @@
         /* ---------------------------------
            BACKGROUND WEBSITE (IFRAME)
         --------------------------------- */
+        /* Fixed to 100% instead of vw/vh to stop website from cutting off */
         #bg-iframe {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             border: none;
             z-index: 1;
             display: none; /* Hidden until login */
+            background-color: #fff;
         }
 
         body.is-dragging #bg-iframe {
@@ -389,6 +395,11 @@
             let startX, startY, initialLeft, initialTop;
 
             function onDown(e) {
+                // Prevent drag if touching buttons or specific interactive elements
+                if (e.target.closest('button') || e.target.closest('.yv-actions') || e.target.closest('[onclick]')) {
+                    return; 
+                }
+
                 let evt = e.type.includes('touch') ? e.touches[0] : e;
                 startX = evt.clientX;
                 startY = evt.clientY;
